@@ -8,14 +8,12 @@
             <span class="glyphicon glyphicon-star" aria-hidden="true"></span>公司推荐</a>
         </router-link> -->
          <router-link to="/home" active-class="menu-item selected" tag="li" class="menu-item">
-          <a>
-            <span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</a>
+                <a><span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</a>
         </router-link>
-        <!--<router-link to="/customer" active-class="menu-item selected" tag="li" class="menu-item">
-          <a>
-            <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>客户</a>
+       <router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item">
+                 <a><span class="glyphicon glyphicon-user" aria-hidden="true"></span>用户</a>
         </router-link>
-        <router-link to="/opportunity" active-class="menu-item selected" tag="li" class="menu-item">
+        <!-- <router-link to="/opportunity" active-class="menu-item selected" tag="li" class="menu-item">
           <a>
             <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>业务</a>
         </router-link>
@@ -172,9 +170,9 @@ ol {
 a{
   color: rgb(0, 112, 210);
 }
-button {
+/* button {
   border-radius: 0!important;
-}
+} */
 
 .panel-container {
   background: #fff;

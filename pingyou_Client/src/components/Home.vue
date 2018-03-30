@@ -44,8 +44,11 @@
                                                                         <td>{{p.class.name}}</td>
                                                                         <td><span class="label label-info">{{ p.status | mapProjectStatus }}</span></td>
                                                                         <td class="text-center text-lg">
-                                                                                <a @click="deleteProjectDetail(p)" data-toggle="tooltip"  data-placement="top"  title="删除项目">
+                                                                                <a @click="deleteProjectDetail(p)" data-toggle="tooltip"  data-placement="top" v-show="status.newsStatus" title="删除项目">
                                                                                          <span class="glyphicon glyphicon-trash"></span>
+                                                                                </a>
+                                                                                <a @click="deleteProjectDetail(p)" data-toggle="tooltip"  data-placement="top" v-show="!status.newsStatus" title="申请项目">
+                                                                                         <span class="glyphicon glyphicon-bookmark"></span>
                                                                                 </a>
                                                                         </td>
                                                                 </tr>
@@ -73,7 +76,7 @@
                                          <div class="tables">
                                                 <hr>
                                                 <div v-show="!status.newsStatus" style="height: 425px">
-                                                        <!-- 学生看到的 -->
+                                                        <p style="font-size:17px;font-weight:bold;">{{gonggao.news}}</p>
                                                 </div>
                                                 <form v-show="status.newsStatus" class="form form-horizontal"  @submit.prevent="addNews()">
                                                         <textarea class="form-control" rows="16" v-model="gonggao.news"></textarea>
@@ -85,7 +88,9 @@
                                  </div>
                         </div>
                 </div>
+                <!-- 下边一行 -->
                 <div class="col-md-12">
+                        <!-- 教务微信公众号最新动态 -->
                         <div class="col-md-8">
                                  <div class="panel panel-default dashboard">
                                          <div class="title">
@@ -100,6 +105,7 @@
                                                  {{news}}
                                                  <p>////////////////////////////</p>
                                                  {{project_detail}}
+                                                 {{me}}
                                          </div>
                                  </div>
                         </div>
@@ -109,14 +115,108 @@
                                                 <div class="icon-container blue">
                                                         <span class="glyphicon glyphicon-plus"  aria-hidden="true"></span>
                                                 </div>
-                                                <b>新增项目</b>
-                                                <p></p>
+                                                <b v-show="status.newsStatus">新增项目</b>
+                                                <b v-show="!status.newsStatus">我的信息</b>
+                                                <a  style="float: right" data-placement="top" data-toggle="modal" data-target="#myModal" v-show="!status.newsStatus" title="修改">
+                                                        <span class="glyphicon glyphicon-pencil"></span>
+                                                </a>
+                                                <!-- 修改信息 -->
+                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                                                        &times;
+                                                                                </button>
+                                                                                <h4 class="modal-title" id="myModalLabel">
+                                                                                        修改我的信息
+                                                                                </h4>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                                 <div class="row">
+                                                                                        <div class="col-md-10 col-md-offset-1">
+                                                                                                <div class="form-group" >
+                                                                                                        <label class="col-md-4 control-label">用户名：</label>
+                                                                                                        <div class="col-md-6">
+                                                                                                                <input type="text" v-model="me.username" class="form-control" placeholder="" required>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                                <div class="form-group">
+                                                                                                        <label class="col-md-4 control-label">性别：</label>
+                                                                                                        <div class="col-md-6">
+                                                                                                                 <select class="form-control" v-model="me.gender">
+                                                                                                                        <option value="Male">男</option>
+                                                                                                                        <option value="Female">女</option>
+                                                                                                                        <option value="Secret">未知</option>
+                                                                                                                </select>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                                <div class="form-group" >
+                                                                                                        <label class="col-md-4 control-label">Email：</label>
+                                                                                                        <div class="col-md-6">
+                                                                                                                <input type="text" class="form-control" v-model="me.email" placeholder="" required>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                                <div class="form-group" >
+                                                                                                        <label class="col-md-4 control-label">ＱＱ：</label>
+                                                                                                        <div class="col-md-6">
+                                                                                                                <input type="text" class="form-control" v-model="me.qq_num" required>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                                <div class="form-group" >
+                                                                                                        <label class="col-md-4 control-label">微信：</label>
+                                                                                                        <div class="col-md-6">
+                                                                                                                <input type="text" class="form-control" v-model="me.weixin" required>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                </div>
+                                                                               <div class="panel panel-info">
+                                                                                        <div class="panel-heading">
+                                                                                                <h4 class="panel-title">
+                                                                                                        <a data-toggle="collapse" data-parent="#accordion" 
+                                                                                                        href="#collapseThree">
+                                                                                                                点击修改密码，修改密码前要先保证你的邮箱已经提交
+                                                                                                        </a>
+                                                                                                </h4>
+                                                                                        </div>
+                                                                                        <div id="collapseThree" class="panel-collapse collapse">
+                                                                                                <div class="panel-body">
+                                                                                                        <div class="form-group" >
+                                                                                                                <label class="col-md-4 control-label">密码：</label>
+                                                                                                                <div class="col-md-6">
+                                                                                                                        <input type="password" class="form-control" v-model="me.password" required>
+                                                                                                                </div>
+                                                                                                        </div>
+                                                                                                        <div class="form-group" >
+                                                                                                                <label class="col-md-4 control-label">验证码：</label>
+                                                                                                                <div class="col-md-6">
+                                                                                                                        <input type="text" class="form-control" v-model="me.code" required>
+                                                                                                                </div>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                                                        关闭
+                                                                                </button>
+                                                                                <button type="button" class="btn btn-primary" data-dismiss="modal" @click="updadeMyInfo({id:'me', data:me})" >
+                                                                                        提交修改
+                                                                                </button>
+                                                                        </div>
+                                                                </div><!-- /.modal-content -->
+                                                        </div><!-- /.modal -->
+                                                </div>
+                                                <br>
+                                                <hr>
                                         </div>
                                         <div class="dashboard-div">
                                                 <div class="row">
                                                         <div class="col-md-12 ">
-                                                                <!-- // 提交给 addProjectDetail 函数 -->
-                                                                 <form class="form form-horizontal"  @submit.prevent="addNewProjectDetail()">      
+                                                                <!-- //  新建项目提交给 addProjectDetail 函数 -->
+                                                                 <form class="form form-horizontal" v-show="status.newsStatus" @submit.prevent="addNewProjectDetail()">      
                                                                         <div class="from-group col-md-12">
                                                                                 <label class="col-md-4 control-label">类型</label>
                                                                                 <div class="col-md-8">
@@ -145,7 +245,7 @@
                                                                                 <label class="col-md-4 control-label">班级</label>
                                                                                 <div class="col-md-8">
                                                                                         <div class="checkbox-inline">
-                                                                                                <div v-for="item in class_list" :key="item.id">
+                                                                                                <div v-for="item in class_list" :key="item.id" v-show="item.name === '<无>' ? false: true">
                                                                                                         <input type="checkbox" @click="checkbox_('class', item.id)">   {{item.name}}
                                                                                                 </div>
                                                                                         </div>
@@ -167,6 +267,50 @@
                                                                                 <button type="submit" class="btn btn-primary btn-roundedrectangle"  ref="addprojectdetail">保存</button>
                                                                         </div>
                                                                  </form>
+                                                                 <div class="col-md-1"></div>
+                                                                 <!-- 我的信息 -->
+                                                                <div class="col-md-10">
+                                                                        <div class="tables">
+                                                                                <table class="table" v-show="!status.newsStatus" >
+                                                                                        
+                                                                                        <thead>
+                                                                                                <tr>
+                                                                                                        <th><label>我的信息</label></th>
+                                                                                                </tr>
+                                                                                        </thead>
+                                                                                        
+                                                                                        <tbody>
+                                                                                                <tr>
+                                                                                                        <th>用户名：</th><th>{{me.username}}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp;&nbsp; 姓名：</th><th>{{me.name}}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp; &nbsp; 性别：</th><th>{{me.gender | mapGenter }}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp; &nbsp; 学号：</th><th>{{me.s_id}}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp; &nbsp; 专业：</th><th>{{me.department}}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp; &nbsp; 班级：</th><th>{{me.class}}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp; Email：</th><th>{{me.email || '无'}}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp; &nbsp;&nbsp;  QQ：</th><th>{{me.qq_num || '无'}}</th>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <th>&nbsp; &nbsp; 微信：</th><th>{{me.dweixin || '无'}}</th>
+                                                                                                </tr>
+                                                                                        </tbody>
+                                                                                </table>
+                                                                        </div>
+                                                                </div>
                                                         </div>
                                                 </div>
                                         </div>
@@ -178,7 +322,7 @@
 
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { get } from '../api'
 
 import Spinner from './Spinner.vue'
@@ -222,8 +366,11 @@ export default {
                         delProjectDetail: 'deleteProjectDetail',
                         editNews: 'editNews'
                 }),
+                ...mapActions('user',{
+                        updateInfo: 'updateInfo'
+                }),
+
                 reloadALL (){
-                        this.reload({item: 'project_detail', params: {}})
                         this.reload({item: 'news', params:{}})
                                 .then(res =>{
                                         this.gonggao =this.news
@@ -237,9 +384,10 @@ export default {
                                 //  学生界面 需要加载的
                                 
                         }
-                                // .then(res => {
+                         this.reload({item: 'project_detail', params: {}})
+                                .then(res => {
                                          this.loading = false
-                                // })
+                                 })
                 },
                 changePage(status, page){
                         if (!isNaN(page) && page <= status.page_sum && page > 0){
@@ -277,7 +425,7 @@ export default {
                          }
                  },
                  addNews(button){
-                         this.$refs.addnews.setAttribute('disable', true)
+                        this.$refs.addnews.setAttribute('disable', true)
                         this.editNews(this.gonggao)
                                 .then(res => {
                                         setTimeout(()=>{
@@ -285,6 +433,20 @@ export default {
                                                 this.$refs.addnews.removeAttribute('disable')
                                                 this.reload({item: 'news', params: {}})
                                         })
+                                })
+                 },
+                 updadeMyInfo(data){
+                        this.loading = true
+                        this.updateInfo(data)
+                                .then(res => {
+                                        this.loading = false
+                                        this.me = res.data.data
+                                        this.$cookie.delete('me')
+                                        this.$cookie.set('me', JSON.stringify(this.me), {expires: '14D'})
+                                        alert('更新成功')
+                                })
+                                .catch(e =>{
+                                        console.log(e)
                                 })
                  },
                  checkbox_(item, id){

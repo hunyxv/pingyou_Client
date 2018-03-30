@@ -53,6 +53,38 @@ Vue.filter('mapProjectStatus', function(state){
         }
 })
 
+Vue.filter('mapMyInfoFrom', function(state){
+        let stateMap = {
+                username: '用户名',
+                s_id: '学号',
+                name: '姓名',
+                department: '院系/专业',
+                gender: '性别',
+                role: '角色',
+                email: 'Email',
+                qq_num: 'QQ',
+                weixin: '微信'
+        }
+        if (stateMap.hasOwnProperty(state)){
+                return stateMap[state]
+        }else{
+                return '未知'
+        }
+})
+
+Vue.filter('mapGenter', function(state){
+        let stateMap = {
+                'Male': '男',
+                'Female': '女',
+                'Secret': '未知'
+        }
+        if (stateMap.hasOwnProperty(state)){
+                return stateMap[state]
+        }else{
+                return '未知'
+        }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

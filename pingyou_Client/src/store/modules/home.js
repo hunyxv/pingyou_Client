@@ -1,8 +1,6 @@
 import { get,post, delete_ } from '../../api'
 
 const RELOAD = 'RELOAD'
-const CHANGE_PROJECTDETAIL_OPTION = 'CHANGE_PROJECTDETAIL_OPTION'
-const REST_FILTER_PARAMS = 'REST_FILTER_PARAMS'
 
 const state = {
         data: {
