@@ -107,6 +107,17 @@ const actions = {
                                         reject(e)
                                 })
                 })
+        },
+        applyPeojectDetail({commit}, pro){
+                return new Promise((resolve, reject) =>{
+                        post('/ballot', {pdid: pro.id})
+                                .then(res => {
+                                        resolve(res)
+                                })
+                                .catch(e =>{
+                                        reject(e)
+                                })
+                })
         }
 }
 

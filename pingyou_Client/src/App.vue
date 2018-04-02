@@ -13,11 +13,10 @@
        <router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item">
                  <a><span class="glyphicon glyphicon-user" aria-hidden="true"></span>用户</a>
         </router-link>
-        <!-- <router-link to="/opportunity" active-class="menu-item selected" tag="li" class="menu-item">
-          <a>
-            <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>业务</a>
+        <router-link to="/ballot" active-class="menu-item selected" tag="li" class="menu-item">
+                 <a><span class="glyphicon glyphicon-flag" aria-hidden="true"></span>投票</a>
         </router-link>
-        <router-link to="/contract" active-class="menu-item selected" tag="li" class="menu-item">
+        <!--<router-link to="/contract" active-class="menu-item selected" tag="li" class="menu-item">
           <a>
             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>合同</a>
         </router-link>

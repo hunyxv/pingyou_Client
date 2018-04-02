@@ -43,8 +43,9 @@ Vue.filter('mapProjectStatus', function(state){
         let stateMap = {
                 0: '未开始',
                 1: '开始投票',
-                2: '结束',
-                3: '作废'
+                2:'待审核',
+                3: '结束',
+                4: '作废'
         }
         if (stateMap.hasOwnProperty(state)){
                 return stateMap[state]
@@ -77,6 +78,20 @@ Vue.filter('mapGenter', function(state){
                 'Male': '男',
                 'Female': '女',
                 'Secret': '未知'
+        }
+        if (stateMap.hasOwnProperty(state)){
+                return stateMap[state]
+        }else{
+                return '未知'
+        }
+})
+
+Vue.filter('mapRole', function(state){
+        let stateMap = {
+                'Administrator': '管理员',
+                'Counselor': '辅导员',
+                'Monitor': '班长',
+                "Student": '学生',
         }
         if (stateMap.hasOwnProperty(state)){
                 return stateMap[state]

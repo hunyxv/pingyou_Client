@@ -54,7 +54,7 @@
                                                                         <input type="text" class="form-control" placeholder="password" aria-describedby="basic-addon1" v-model="classinfo.password">
                                                                 </div>
                                                         </div>
-                                                        <div class="col-md-1">
+                                                        <div class="col-md-1" v-if="me.role === 'Counselor'">
                                                                 <button type="button" class="btn btn-primary btn-circle" @click="createClassUser({id: 'all',data:classinfo})">  &nbsp;创&nbsp;建&nbsp;  </button>
                                                         </div>
                                                 </div>
@@ -86,8 +86,13 @@
                                                 </div>   
                                         </div>
                                         <div class="col-md-12"  v-show="!status.myInfo">
+                                                <label class="radio-inline" v-for="item in period" :key="item">
+                                                        <input type="radio" name="period" id="inlineRadio1" value="option1" @click="getperiodName(item)"> {{item}} 届
+                                                </label>
+                                        </div>
+                                        <div class="col-md-12"  v-show="!status.myInfo">
                                                 <label class="radio-inline" v-for="item in class_list" :key="item.id" v-show="item.name === '<无>'? false : true">
-                                                        <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" @click="getThisClassUser(item.name)"> {{item.name}}
+                                                        <input type="radio" name="class" id="inlineRadio1" value="option1" @click="getThisClassUser(item.name)"> {{item.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 </label>
                                         </div>
                                         <table class="table table-hover" v-show="!status.myInfo">
@@ -105,7 +110,7 @@
                                                                 <th>{{user.s_id}}</th>
                                                                 <th>{{user.name}}</th>
                                                                 <th>{{user.gender | mapGenter}}</th>
-                                                                <th>{{user.role}}</th>
+                                                                <th>{{user.role | mapRole}}</th>
                                                                 <th>
                                                                         <div class="btn-group" role="group" aria-label="...">
                                                                                 <button type="button" class="btn btn-default"  v-if="user.role === 'Student'" @click="updateInfo({id: user.id, data:{role: 1}, class:user.class, department: user.department})">升为班长</button>
@@ -125,13 +130,21 @@
                                                                 <th>学号</th>
                                                                 <th>姓名</th>
                                                                 <th>性别</th>
+                                                                <th>职位</th>
+                                                                <th v-if="me.role === 'Monitor' ">操作 </th>
                                                         </tr>
                                                 </thead>
                                                 <tbody>
                                                          <tr v-for="user in all_user_list" :key="user.id" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
                                                                 <th>{{user.s_id}}</th>
                                                                 <th>{{user.name}}</th>
-                                                                <th>{{user.gender}}</th>
+                                                                <th>{{user.gender | mapGenter}}</th>
+                                                                <th>{{user.role | mapRole}}</th>
+                                                                <th v-if="me.role === 'Monitor' ">
+                                                                        <button type="button" class="btn btn-primary" data-placement="top" data-toggle="modal" data-target="#changename" @click="chengeName({id:user.id, class:user.class, department: user.department})">
+                                                                                编辑
+                                                                        </button>
+                                                                </th>
                                                         </tr> 
                                                 </tbody>
                                         </table>
@@ -246,6 +259,41 @@
                                 </div><!-- /.modal-content -->
                         </div><!-- /.modal -->
                 </div>
+                <div class="modal fade" id="changename" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                                <div class="modal-content">
+                                        <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                        &times;
+                                                </button>
+                                                <h4 class="modal-title" id="myModalLabel">
+                                                        修改资料
+                                                </h4>
+                                        </div>
+                                
+                                        <div class="modal-body">
+                                                <div class="row">
+                                                        <div class="col-md-10 col-md-offset-1">
+                                                                <div class="form-group" >
+                                                                        <label class="col-md-4 control-label">姓名：</label>
+                                                                        <div class="col-md-6">
+                                                                                <input type="text" class="form-control" v-model="changename" placeholder="" required>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                                关闭
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary" data-dismiss="modal" @click="updateInfo({id:updataID, data: {name: changename}, class:thisClass, department: thisDepartment})" >
+                                                                提交修改
+                                                        </button>
+                                        </div>
+                                 </div>
+                        </div>
+                </div>
         </div>
 </template>
 
@@ -263,8 +311,11 @@ export default {
         data: () => ({
                 updataID:'',
                 changename:'',
+                period:[],
                 thisClass:'',
                 thisDepartment:'',
+                departmentName:'',
+                periodName:0,
                 loading: false,
                 classinfo: {
                         department:'',
@@ -305,30 +356,41 @@ export default {
                                 })
                 },
                 getThisDepartmentUser(departmentname){
+                        this.departmentName = departmentname
                         this.thisClassUser = []
                          if (departmentname !== 'me'){
                                 this.status.myInfo = false
                                 let thisDepartmentUser = []
-                                for (let index in this.all_user_list){
-                                       let user = this.all_user_list[index]
-                                        if (user.department === departmentname){
-                                                thisDepartmentUser.push(user)
-                                        }
-                                } 
-                                this.thisDepartmentUser = thisDepartmentUser
+                                // for (let index in this.all_user_list){
+                                //        let user = this.all_user_list[index]
+                                //         if (user.department === departmentname){
+                                //                 thisDepartmentUser.push(user)
+                                //         }
+                                // } 
+                                // this.thisDepartmentUser = thisDepartmentUser
                         } else{
                                 this.status.myInfo = true
                         }
                 },
+                getperiodName(periodname){
+                        this.periodName = periodname
+                },
                  getThisClassUser(classname){
                         this.status.myInfo = false
                         let thisClassUser = []
-                        for (let index in this.thisDepartmentUser){
-                                let user = this.thisDepartmentUser[index]
-                                if (user.class === classname){
+                        for (let index in this.all_user_list){
+                                let user = this.all_user_list[index]
+                                console.log(this.departmentName, classname, this.periodName)
+                                if (user.department === this.departmentName && user.class === classname && user.period === this.periodName){
                                         thisClassUser.push(user)
                                 }
-                        } 
+                        }
+                        // for (let index in this.thisDepartmentUser){
+                        //         let user = this.thisDepartmentUser[index]
+                        //         if (user.class === classname){
+                        //                 thisClassUser.push(user)
+                        //         }
+                        // } 
                         this.thisClassUser = thisClassUser
                  },
                 updateInfo(data){    
@@ -402,6 +464,14 @@ export default {
                 delete this.myinfoObj.class
                 delete this.myinfoObj.start_sid
                 delete this.myinfoObj.confirmed
+                delete this.myinfoObj.period
+                let today = new Date()
+                let year = today.getUTCFullYear()
+                this.period = [...[year-4, year-3,year-2, year-1]]
+                let month = today.getMonth()
+                if([9,10,11,12].includes(month)){
+                        this.period.push(year)
+                }
 
                 this.loading = true
                 this.reloadALL()

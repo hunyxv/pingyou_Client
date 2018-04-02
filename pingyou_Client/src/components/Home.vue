@@ -47,8 +47,11 @@
                                                                                 <a @click="deleteProjectDetail(p)" data-toggle="tooltip"  data-placement="top" v-show="status.newsStatus" title="删除项目">
                                                                                          <span class="glyphicon glyphicon-trash"></span>
                                                                                 </a>
-                                                                                <a @click="deleteProjectDetail(p)" data-toggle="tooltip"  data-placement="top" v-show="!status.newsStatus" title="申请项目">
+                                                                                <a @click="applyProject(p)" data-toggle="tooltip"  data-placement="top"  v-if="!(p.participants.includes(me.s_id))" title="申请项目">
                                                                                          <span class="glyphicon glyphicon-bookmark"></span>
+                                                                                </a>
+                                                                                <a  data-toggle="tooltip"  data-placement="top" v-show="!status.newsStatus" v-if="p.participants.includes(me.s_id)" title="已申请">
+                                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                                 </a>
                                                                         </td>
                                                                 </tr>
@@ -364,7 +367,8 @@ export default {
                         reload: 'reload',
                         addProjectDetail: 'addProjectDetail',
                         delProjectDetail: 'deleteProjectDetail',
-                        editNews: 'editNews'
+                        editNews: 'editNews',
+                        applyPeojectDetail: 'applyPeojectDetail'
                 }),
                 ...mapActions('user',{
                         updateInfo: 'updateInfo'
@@ -400,17 +404,17 @@ export default {
                         }
                  },
                  addNewProjectDetail(button) {
-                         this.$refs.addprojectdetail.setAttribute('disable', true)
+                         this.$refs.addprojectdetail.setAttribute('disabled', true)
                          this.addProjectDetail(this.project_detail)
                                 .then(res => {
                                         setTimeout(() => {
                                                 alert('新建项目成功')
-                                                this.$refs.addprojectdetail.removeAttribute('disable')
+                                                this.$refs.addprojectdetail.removeAttribute('disabled')
                                                 this.reload({item: 'project_detail', params: {}})  
                                         })
                                 })
                                 .catch(e => {
-                                        this.$refs.addprojectdetail.removeAttribute('disable')
+                                        this.$refs.addprojectdetail.removeAttribute('disabled')
                                         console.log(e)
                                 })
                  }, 
@@ -424,13 +428,27 @@ export default {
                                         })
                          }
                  },
+                 applyProject(pro){
+                         this.loading = true
+                         this.applyPeojectDetail(pro)
+                                .then(res => {
+                                         this.reload({item: 'project_detail', params: {}})
+                                                .then(
+                                                        this.loading = false
+                                                )
+                                })
+                                .catch(e => {
+                                        console.log(e)
+                                        this.loading = false
+                                })
+                 },
                  addNews(button){
-                        this.$refs.addnews.setAttribute('disable', true)
+                        this.$refs.addnews.setAttribute('disabled', true)
                         this.editNews(this.gonggao)
                                 .then(res => {
                                         setTimeout(()=>{
                                                 alert('已更新公告')
-                                                this.$refs.addnews.removeAttribute('disable')
+                                                this.$refs.addnews.removeAttribute('disabled')
                                                 this.reload({item: 'news', params: {}})
                                         })
                                 })
