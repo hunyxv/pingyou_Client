@@ -13,7 +13,10 @@
                 </div>
                  <div class="col-md-12">
                         <div class="panel panel-primary">
-                                <div class="panel-body">
+                                <div class="panel-body project" v-if="!project_detail">
+                                        <div class="dontproject">没有正在进行中的项目</div>
+                                </div>
+                                <div class="panel-body" v-if="project_detail">
                                         <div class="col-md-8">
                                                 <table class="table table-striped">
                                                         <thead>
@@ -37,9 +40,13 @@
                                                 </table>
                                         </div>
                                         <div class="col-md-4">
-                                                <div class="" style="max-width: 350px;">
+                                                <div class="" style="max-width: 350px;" v-show="me.role ==='Monitor'">
                                                         <button type="button" class="btn btn-success btn-lg btn-block" ref="startballot" @click="startBallot(project_detail.id)">开始投票</button>
                                                         <button type="button" class="btn btn-danger btn-lg btn-block" ref="stopballot" @click="stopBallot(project_detail.id)">结束投票</button>
+                                                </div>
+                                                <div class="" style="max-width: 350px;" v-show="me.role !=='Monitor'">
+                                                        <button type="button" class="btn btn-success btn-lg btn-block" disabled="">开始投票</button>
+                                                        <button type="button" class="btn btn-danger btn-lg btn-block"  disabled="">结束投票</button>
                                                 </div>
                                         </div>
                                 </div>
@@ -49,21 +56,27 @@
                         <div class="col-md-8">
                                 <div class="panel panel-primary">
                                         <div class="panel-body">
+                                                <div  class="overlay" v-show="!canchat">
+                                                        <div class="startchat" style="max-width: 400px;">
+                                                                 <button type="button" class="btn btn-success btn-lg btn-block" @click="startChat()">进入讨论室</button>
+                                                        </div>
+                                                </div>
                                                 <div class="col-md-12">
-                                                        <div class="panel panel-default">
+                                                        <div class="panel panel-default" v-show="canchat">
+                                                                <a href="#">online:  <span class="badge">{{numUser}}</span></a>
                                                                 <div class="panel-body">
-                                                                        <div class="list-box row">
+                                                                        <div class="list-box row" ref="listBox">
                                                                                 <slot>
-
+                                                                                        <Message :user="userInfo" :message="item"  v-for="(item, index) in messages" :key="index" ref="messageList"/>
                                                                                 </slot>
                                                                         </div>
                                                                 </div>
                                                                 <div class="input-box row">
                                                                         <form class="col-md-10 col-sm-8">
-                                                                                <textarea class="form-control" row ="10" v-model="message" placeholder="Hi！"></textarea>
+                                                                                <textarea class="form-control" row ="5" v-model="message" placeholder="Hi！" @keyup.enter="sendMessage(message)"></textarea>
                                                                         </form>
                                                                         <div class="col-md-2 btn-box col-sm-4">
-                                                                                <button class="btn btn-primary btn-block" >发送</button>
+                                                                                <button class="btn btn-primary btn-block" @click="sendMessage(message)">发送</button>
                                                                         </div>
                                                                 </div>
                                                         </div>
@@ -91,14 +104,24 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { get } from '../api'
 
 import Spinner from './Spinner.vue'
+import Message from './Message.vue'
 import util from '../util'
 import { config } from '../store/config'
 
+import io from 'socket.io-client'
+
 export default {
-        
-   name: "Ballot",
+        name: "Ballot",
         data: () => ({
+                roomID:'',
+                numUser:0,
                 loading: false,
+                canchat: false,
+                message:'',
+                messages: [],
+                socket:'',
+                userInfo:'',
+                me: '',
         }),
          computed:{
                 ...mapGetters('ballot',{
@@ -142,18 +165,119 @@ export default {
                                 })
                 },
                  stopBallot(id){
-
+                         // 结束后 改变项目状态为 待审核
+                         // 保存聊天记录 发送到后端
                  },
-          },
+                startChat(){
+                        if(this.project_detail && this.project_detail.status === 1){
+                                this.canchat = true
+                                // 链接socket 
+                                this.connectionSocket()
+                                this.getNewMessage()
+                                this.subscriptUserLeave()
+                        }else{
+                                alert('投票还没开始，等待班长开始投票。')
+                        }
+                },
+
+
+                 notification(userInfo){
+                        if (window.Notification && Notification.permission !== 'denied'){
+                                Notification.requestPermission(() => {
+                                        new Notification(`${userInfo.name}~加入了聊天室`, { body: `系统通知！`, icon: userInfo.head });
+                                })
+                        } else {
+                                new Notification(`${userInfo.name}~加入了聊天室`, { body: `系统通知！`, icon: userInfo.head });
+                        }
+                },
+                connectionSocket(){
+                        let roomID = this.roomID
+                        let name = this.me.name
+                        const socketUrl = process.env.NODE_ENV === 'development'? 'http://127.0.0.1:3000': ''
+                        const socket = io(socketUrl)
+                        const vm = this;
+                        console.log(process.env.NODE_ENV);
+                        vm.socket  = socket;
+                        // 加入房间
+                        vm.socket.emit('join', {
+                                name: name,  
+                                roomID: roomID
+                        });
+                        // 加入房间成功的回调函数 通知客户端 xxx 加入房间
+                        vm.socket.on('commectionRoomSuccess', (data) => {
+                                this.numUser = data.numUser;
+                                if (data.userInfo){
+                                        vm.notification(data.userInfo)
+                                        if (this.me.name === data.userInfo.name){
+                                                this.userInfo = data.userInfo
+                                        }
+                                }
+                        });
+                },
+                sendMessage(msg){
+                        if (msg !== ''){
+                                const vm = this;
+                                const data = {
+                                        head: vm.userInfo.head,
+                                        name: vm.userInfo.name,
+                                        message:msg,
+                                }
+                                vm.socket.emit('messageSend', data)
+                        } else {
+                                alert("You can't send nothing!")
+                        }
+
+                        this.message = ''
+                },
+                updateMessageFn(message){
+                        const vm = this;
+                        const len = vm.messages.length;
+                        if (len > 2000) {
+                                vm.messages.shift();
+                        }
+                        vm.messages.push(message)
+                },
+                pushNewMessage(newMessage){
+                        const vm = this;
+                        if(Array.isArray(newMessage)){
+                                newMessage.forEach((item) => {
+                                        vm.updateMessageFn(item)
+                                }) 
+                        } else {
+                                vm.updateMessageFn(newMessage);
+                        }
+                        vm.setScrollTopToBottom();
+                },
+                setScrollTopToBottom() {
+                        const vm = this;
+                        const $listBox = vm.$refs.listBox;
+                        const top = $listBox && $listBox.scrollHeight || 0;
+                        $listBox.scrollTop = top
+                },
+                getNewMessage(){
+                        const vm = this;
+                        vm.socket.on('messageReceive', (data) => {
+                                vm.pushNewMessage(data)
+                                setTimeout(vm.setScrollTopToBottom, 0)
+                        })
+                },
+                subscriptUserLeave() {
+                        this.socket.on('userLeave', (data) => {
+                                this.numUser = data.numUser;
+                        })
+                }
+        },
           
           
         created (){
                 this.me = JSON.parse(this.$cookie.get('me'))
                 this.loading = true
+                this.roomID =  Math.floor(this.me.s_id/100)%1000000
                 this.reloadALL()
         },
         components: {
                 Spinner,
+                Message
         }
 }
 </script>
@@ -161,35 +285,37 @@ export default {
  <style lang="less">
 .list-box {
         background: #eee;
-        display: flex;
+        display: block;
         flex-direction: row;
         justify-content:flex-start;
         text-align:left;
         overflow-y: auto;
+        overflow-x: hidden;
         height: 70vh;
 };
 .input-box {
-  border-top:1px solid #ddd;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #ddd;
-  overflow: hidden;
-  height: 12vh;
-  padding:5px 0;
-  box-sizing: border-box;
-  textarea {
-    height: 75px;
-    resize: none;
-  }
-  .btn-box {
-    text-align: center;
-    margin-top: 6px;
-    button {
-      height: 50px;
-      font-size: 25px;
-    }
-  }
+        margin: auto;
+        border-top:1px solid #ddd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #FFFFFF;
+        overflow: hidden;
+        height: 12vh;
+        padding:5px 1px;
+        box-sizing: border-box;
+        textarea {
+                height: 75px;
+                resize: none;
+        }
+        .btn-box {
+                text-align: center;
+                margin-top: 6px;
+                button {
+                        height: 50px;
+                        font-size: 25px;
+                }
+        }
 }
 @media (min-width: 320px) and (max-width: 550px) {
   .input-box {
@@ -208,5 +334,20 @@ export default {
         width: 75px;
         height: 75px;
         background-color: green;
+}
+ .overlay {
+        background: #eee;
+        display: flex;
+        flex-direction: row;
+        justify-content:flex-start;
+        text-align:left;
+        overflow-y: auto;
+        height: 70vh;
+}
+.startchat, .dontproject{
+        margin: auto;
+}
+.project{
+        height: 150px;
 }
 </style>

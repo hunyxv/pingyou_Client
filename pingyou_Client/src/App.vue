@@ -40,8 +40,9 @@
           </a>
           <div class="personal-info">
             <a href="javascript:;">
-              <span class="peopel-name">{{ me && me.name }}-{{me && me.department.name}}</span>
-              <span v-if="me" class="company-name label label-info">{{me.role}}</span>
+                <span class="peopel-name">{{ me && me.name }}</span><br>
+                <span>{{me && me.department}}</span>
+                <span v-if="me" class="company-name label label-info">{{me.role}}</span>
               
             </a>
           </div>

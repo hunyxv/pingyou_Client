@@ -380,7 +380,6 @@ export default {
                         let thisClassUser = []
                         for (let index in this.all_user_list){
                                 let user = this.all_user_list[index]
-                                console.log(this.departmentName, classname, this.periodName)
                                 if (user.department === this.departmentName && user.class === classname && user.period === this.periodName){
                                         thisClassUser.push(user)
                                 }
