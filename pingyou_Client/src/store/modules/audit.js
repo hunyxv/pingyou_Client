@@ -66,7 +66,7 @@ const actions = {
                 //                 })
                 // })
                 return new Promise((resolve, reject) => {
-                        post('/start_ballot/' + data.pdid, data)
+                        put('/project-detail/' + data.pdid, data.data)
                                 .then(res => {
                                         resolve(res)
                                 })

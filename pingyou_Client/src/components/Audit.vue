@@ -71,30 +71,22 @@
                                                                                 <h4 class="modal-title" id="myModalLabel">申请详情：</h4>
                                                                         </div>
                                                                         <div class="modal-body">
-                                                                                <div class="form-group">
-                                                                                        <label class="col-md-4 control-label">申请者：</label>
-                                                                                         <div class="col-md-6">
-                                                                                                <label for="">{{ballot.people.name}}</label>
-                                                                                        </div>
-                                                                                </div>
-                                                                                <div class="form-group">
-                                                                                        <label class="col-md-4 control-label">项目：</label>
-                                                                                         <div class="col-md-6">
-                                                                                                <label for="">{{ballot.project_detail.name}}</label>
-                                                                                        </div>
-                                                                                </div>
-                                                                                <div class="form-group">
-                                                                                        <label class="col-md-4 control-label">得票数：</label>
-                                                                                         <div class="col-md-6">
-                                                                                                <label for="">{{ballot.number}}</label>
-                                                                                        </div>
-                                                                                </div>
-                                                                                <div class="form-group">
-                                                                                        <label class="col-md-4 control-label">投票者有：</label>
-                                                                                         <div class="col-md-6">
-                                                                                                <label v-for="item in ballot.ballot_people" :key="item">{{item}}、</label>
-                                                                                        </div>
-                                                                                </div>
+                                                                                <table class="table table-striped">
+                                                                                        <tbody>
+                                                                                                <tr>
+                                                                                                        <td>申请者：</td><td>{{ballot.people.name}}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <td>项目：</td><td>{{ballot.project_detail.name}}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <td>得票数：</td><td>{{ballot.number}}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <td>投票者有：</td><td><label v-for="(item, index) in ballot.ballot_people" :key="index">{{item}}、</label></td>
+                                                                                                </tr>
+                                                                                        </tbody>
+                                                                                </table>
                                                                         </div>
                                                                         <div class="modal-footer">
                                                                                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -110,11 +102,19 @@
                                         <div class="panel-heading">
                                                 项目：{{project_detail.name}} 的讨论记录
                                         </div>
-                                        <div class="panel-body messageBox">
+                                        <div class="panel-body messageBox"  style=" height:0px; padding-bottom: 60%">
                                                 <div v-for="(item, index) in messages" :key="index">
                                                         <label style="font-family:'STHeiti ';font-weight: bold;"><b>{{item.name}}:</b> </label>
                                                         <label style="">{{ item.message }}</label>
                                                 </div>
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="col-md-6">
+                                <div style=" height:0px; padding-bottom: 40%;padding-top:30%">
+                                        <div class="" style="max-width: 400px;margin:auto;">
+                                                <button type="button" class="btn btn-success btn-lg btn-block" @click="passProjectDetail(project_detail)">审核通过</button>
+                                                <button type="button" class="btn btn-danger btn-lg btn-block" @click="cancellationProjedtDetail(project_detail)">评选作废</button>
                                         </div>
                                 </div>
                         </div>
@@ -176,6 +176,26 @@ export default {
                 ballotDetail(ballot){
                         this.ballot = ballot
                          console.log(this.ballot)
+                },
+                passProjectDetail(project_detail){
+                        this.changeProStatus({pdid: project_detail.id, data: {status:3}})
+                                .then(res => {
+                                        this.loading = true
+                                        this.reloadALL()
+                                })
+                                .catch(e => {
+                                        console.log(e)
+                                })
+                },
+                cancellationProjedtDetail(project_detail){
+                        this.changeProStatus({pdid: project_detail.id, data: {status: 4}})
+                                .then(res => {
+                                                this.loading = true
+                                                this.reloadALL()
+                                        })
+                                        .catch(e => {
+                                                console.log(e)
+                                        })
                 }
         },
 

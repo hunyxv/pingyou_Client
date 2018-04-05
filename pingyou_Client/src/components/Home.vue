@@ -40,7 +40,7 @@
                                                                 <tr v-for="p in project_detail_list"  :key="p.id">
                                                                         <td>{{p.project.name}}</td>
                                                                         <td>{{p.name}}</td>
-                                                                        <td>{{p.department.name}}</td>
+                                                                        <td><a href="#" data-toggle="modal" data-target="#project-detail" @click="clickProjectDetail(p)">{{p.department.name}}</a></td>
                                                                         <td>{{p.class.name}}</td>
                                                                         <td><span class="label label-info">{{ p.status | mapProjectStatus }}</span></td>
                                                                         <td class="text-center text-lg">
@@ -57,6 +57,39 @@
                                                                 </tr>
                                                         </tbody>
                                                 </table>
+                                                 <!-- 模态框 -->
+                                                <div class="modal fade" id="project-detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                                                <h4 class="modal-title" id="myModalLabel">申请详情：</h4>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                                <table class="table table-striped">
+                                                                                        <tbody>
+                                                                                                 <tr>
+                                                                                                        <td>类型：</td><td>{{ click_project_detail.project.name }}</td><td></td><td>项目名：</td><td>{{ click_project_detail.name }}</td>
+                                                                                                        <td>创建者：</td><td>{{ click_project_detail.counselor }}</td><td></td><td>状态：</td><td><span class="label label-info">{{ click_project_detail.status | mapProjectStatus }}</span></td>
+                                                                                                </tr>
+                                                                                                
+                                                                                                <tr>
+                                                                                                        <td>专业：</td><td>{{ click_project_detail.department.name }}</td><td></td><td>班级：</td><td>{{ click_project_detail.class.name }}</td>
+                                                                                                        <td>名额：</td><td>{{ click_project_detail.places }}</td><td></td><td>已申请人数：</td><td>{{ click_project_detail.participants.length }}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <td>创建时间：</td><td>{{ click_project_detail.create_date }}</td><td></td><td>有效期：</td><td>{{ click_project_detail.expiration }} 天</td>
+                                                                                                        <td>结果：</td><td><label v-for="(item, index) in click_project_detail.result" :key="index">{{ item }}、</label></td><td></td><td></td><td></td>
+                                                                                                </tr>
+                                                                                        </tbody>
+                                                                                </table>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                </div>
                                         </div>
                                         <nav aria-label="...">
                                                 <ul class="pager">
@@ -357,6 +390,17 @@ export default {
                         places:'',
                         exp: '',
                 },
+                click_project_detail: {
+                        project:{
+                                name:''
+                        },
+                        name:'',
+                        department: {name:''},
+                        class: {name:''},
+                        participants:[],
+                        places:'',
+                        exp: '',
+                },
                 gonggao:{
                         news: ''
                 },
@@ -493,6 +537,9 @@ export default {
                                         this.project_detail.class_list.push(id)
                                 }
                         }
+                },
+                clickProjectDetail(project_detail){
+                        this.click_project_detail = project_detail
                 }
 
         },
