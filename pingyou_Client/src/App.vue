@@ -16,11 +16,10 @@
         <router-link to="/ballot" active-class="menu-item selected" tag="li" class="menu-item">
                  <a><span class="glyphicon glyphicon-flag" aria-hidden="true"></span>投票</a>
         </router-link>
-        <!--<router-link to="/contract" active-class="menu-item selected" tag="li" class="menu-item">
-          <a>
-            <span class="glyphicon glyphicon-print" aria-hidden="true"></span>合同</a>
+        <router-link to="/audit" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role === 'Counselor'">
+                <a><span class="glyphicon glyphicon-check" aria-hidden="true"></span>审核</a>
         </router-link>
-        <router-link to="/contact" active-class="menu-item selected" tag="li" class="menu-item">
+       <!-- <router-link to="/contact" active-class="menu-item selected" tag="li" class="menu-item">
           <a>
             <span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span>联系人</a>
         </router-link>

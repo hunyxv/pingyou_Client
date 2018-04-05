@@ -1,17 +1,32 @@
 import { get,post, put } from '../../api'
 
 const RELOAD = 'RELOAD'
+const GETMESSAGES = 'GETMESSAGES'
+const GETBALLOTS = 'GETBALLOT'
 
 const state = {
         data: {
-                project_detail:{},
+                project_detail_list:[],
                 ballot_list: [],
-        }
+                messages:[],
+        },
+        status: {
+                project_detail: {
+                        count: '',
+                        page_sum: '',
+                        current_page: '',
+                        has_previous: '',
+                        has_next: '',
+                        item:''
+                },
+        },
 }
 
 const getters = {
-        project_detail: state => state.data.project_detail,
-        ballot_list: state => state.data.ballot_list
+        project_detail_list: state => state.data.project_detail_list,
+        ballot_list: state => state.data.ballot_list,
+        messages: state => state.data.messages,
+        status:  state => state.status
 }
 
 const actions = {
@@ -20,7 +35,7 @@ const actions = {
                 let { item, params = {} } = data
                 switch(item){
                         case 'project_detail': 
-                                url = '/project-detail'
+                                url = '/project-detail?page_size=3'
                                 break
                         case 'ballot':
                                 url = '/ballot'
@@ -60,10 +75,11 @@ const actions = {
                                 })
                 })
         },
-        updateBallot({commit}, id){
+        downloadMessages({commit}, data){
                 return new Promise((resolve, reject) => {
-                        put('/ballot/' + id, {})
+                        get('/messages',{pdid: data.id})
                                 .then(res => {
+                                        commit(GETMESSAGES, res.data.data)
                                         resolve(res)
                                 })
                                 .catch(e => {
@@ -71,16 +87,21 @@ const actions = {
                                 })
                 })
         },
-        uploadMessage({commit},data){
-                console.log(data)
+        getBallot({commit}, data){
                 return new Promise((resolve, reject) => {
-                        post('/messages', data)
+                        get('/ballot', {pdid: data.id})
                                 .then(res => {
+                                        commit(GETBALLOTS, res.data.data)
                                         resolve(res)
                                 })
                                 .catch(e => {
                                         reject(e)
                                 })
+                })
+        },
+        getXClassUser({commit}, data){
+                return new Promise((resolve, reject) => {
+                        get('/user')
                 })
         }
 }
@@ -88,15 +109,26 @@ const actions = {
 const mutations = {
         [RELOAD] (state, {item, data}){
                 if (item === 'project_detail' ){
-                        state.data.project_detail= data.list[0]
+                        state.data.project_detail_list= data.list
                         if ( state.data.project_detail){
                                 let create_date = new Date(state.data.project_detail.create_date * 1000)
                                 state.data.project_detail.create_date = create_date.toLocaleString()
                         }
+                        state.status.project_detail.count = data.count
+                        state.status.project_detail.page_sum = data.page_sum
+                        state.status.project_detail.current_page = data.current_page
+                        state.status.project_detail.has_previous = data.has_previous
+                        state.status.project_detail.has_next = data.has_next
+                        state.status.project_detail.item = item
                 } else if(item == 'ballot') {
                         state.data.ballot_list = data
                 }
-                
+        },
+        [GETMESSAGES] (state,  data){
+                 state.data.messages = data
+        },
+        [GETBALLOTS](state, data){
+                        state.data.ballot_list = data
         }
 }
 

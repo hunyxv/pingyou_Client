@@ -5,6 +5,7 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import User from '@/components/User'
 import Ballot from '@/components/Ballot'
+import Audit from '@/components/Audit'
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ export default new Router({
                         path:'/ballot',
                         name: 'Ballot',
                         component:Ballot
+                },
+                {
+                        path: '/audit',
+                        name: 'Audit',
+                        component: Audit
                 }
         ]
 })

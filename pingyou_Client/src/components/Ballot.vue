@@ -88,8 +88,11 @@
                                 <div class="panel panel-primary">
                                         <div class="panel-body">
                                                 <div class="col-md-12">
-                                                        <div class="ballot">
-
+                                                        <div class="ballot" v-for="item in ballot_list" :key="item.id" style="position:relative;" @click="Ballot(item.id)">
+                                                                <img src="/static/duigou.png" v-if="item.ballot_people.includes(me.s_id)" alt="" style=" width: 71px;height: 71px;position:absolute;">
+                                                                {{item.people.name}}
+                                                                <br>
+                                                                票数: {{item.number}}
                                                         </div>
                                                 </div>
                                         </div>
@@ -133,6 +136,8 @@ export default {
                   ...mapActions('ballot',{
                           reload: 'reload',
                           changeProStatus: 'changeProStatus',
+                          updateBallot: 'updateBallot',
+                          uploadMessage: 'uploadMessage'
                   }),
                 reloadALL (){
                         this.reload({item: 'project_detail', params:{status:0}})
@@ -146,6 +151,7 @@ export default {
                                          if (this.project_detail.status  >  2){
                                                 this.$refs.stopballot.setAttribute('disabled', true)
                                         }
+                                        this.reload({ item: 'ballot', params: {pdid: this.project_detail.id} })
                                 })
                 },
                 startBallot(id){
@@ -164,10 +170,44 @@ export default {
                                         console.log(e)
                                 })
                 },
-                 stopBallot(id){
-                         // 结束后 改变项目状态为 待审核
-                         // 保存聊天记录 发送到后端
-                 },
+                stopBallot(id){
+                        this.loading = true
+                        // 结束后 改变项目状态为 2 待审核
+                        this.changeProStatus({pdid: id, status: 2})
+                                .then(res => {
+                                        this.$refs.startballot.setAttribute('disabled', true)
+                                        this.reload({item: 'project_detail', params:{status:2}})
+                                                .then(res => {
+                                                        this.loading = false
+                                                        // let create_date = new Date(this.project_detail.create_date * 1000)
+                                                        // this.project_detail.create_date = create_date.toLocaleString()
+                                                })
+                                                .catch(e => {
+                                                        console.log(e)
+                                                })
+                                        let messages_data = {pdid: id, messages: this.messages}
+                                         // 保存聊天记录 发送到后端
+                                        this.uploadMessage(messages_data)
+                                                .then(res => {
+                                                        alert(res.data.data.msg + '聊天记录已上传！')
+                                                })
+                                })
+                                .catch(e => {
+                                        console.log(e)
+                                })
+                },
+                Ballot(id){
+                        this.updateBallot(id)
+                                .then(res => {
+                                        this.reload({ item: 'ballot', params: {pdid: this.project_detail.id} })
+                                        alert(res.data.data.msg)
+                                })
+                                .catch(e => {
+                                        console.log(e)
+                                })
+                },
+
+                 // 加入聊天室
                 startChat(){
                         if(this.project_detail && this.project_detail.status === 1){
                                 this.canchat = true
@@ -179,8 +219,7 @@ export default {
                                 alert('投票还没开始，等待班长开始投票。')
                         }
                 },
-
-
+                // 通知用户 xxx 加入聊天室
                  notification(userInfo){
                         if (window.Notification && Notification.permission !== 'denied'){
                                 Notification.requestPermission(() => {
@@ -190,6 +229,7 @@ export default {
                                 new Notification(`${userInfo.name}~加入了聊天室`, { body: `系统通知！`, icon: userInfo.head });
                         }
                 },
+                // 链接 socket
                 connectionSocket(){
                         let roomID = this.roomID
                         let name = this.me.name
@@ -214,6 +254,7 @@ export default {
                                 }
                         });
                 },
+                // 发送消息
                 sendMessage(msg){
                         if (msg !== ''){
                                 const vm = this;
@@ -229,6 +270,7 @@ export default {
 
                         this.message = ''
                 },
+                // 更新消息列表
                 updateMessageFn(message){
                         const vm = this;
                         const len = vm.messages.length;
@@ -248,12 +290,14 @@ export default {
                         }
                         vm.setScrollTopToBottom();
                 },
+                // 每来一条新消息使滑动条处于最低端
                 setScrollTopToBottom() {
                         const vm = this;
                         const $listBox = vm.$refs.listBox;
                         const top = $listBox && $listBox.scrollHeight || 0;
                         $listBox.scrollTop = top
                 },
+                // 接收消息
                 getNewMessage(){
                         const vm = this;
                         vm.socket.on('messageReceive', (data) => {
@@ -261,6 +305,7 @@ export default {
                                 setTimeout(vm.setScrollTopToBottom, 0)
                         })
                 },
+                // 用户离开 更新用户在线数量
                 subscriptUserLeave() {
                         this.socket.on('userLeave', (data) => {
                                 this.numUser = data.numUser;
@@ -274,6 +319,11 @@ export default {
                 this.loading = true
                 this.roomID =  Math.floor(this.me.s_id/100)%1000000
                 this.reloadALL()
+        },
+        mounted(){
+                window.onbeforeunload = function(event){    
+                        return '您若关闭或刷新将丢失聊天记录！班长请确保项目结束后再关闭！'; 
+                };
         },
         components: {
                 Spinner,
@@ -333,7 +383,11 @@ export default {
 .ballot{
         width: 75px;
         height: 75px;
-        background-color: green;
+        float: left;
+        margin: 10px 20px 10px 0;
+        border: 2px solid;
+        border-radius:10px;
+        background-color: white;
 }
  .overlay {
         background: #eee;

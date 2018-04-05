@@ -47,7 +47,7 @@
                                                                                 <a @click="deleteProjectDetail(p)" data-toggle="tooltip"  data-placement="top" v-show="status.newsStatus" title="删除项目">
                                                                                          <span class="glyphicon glyphicon-trash"></span>
                                                                                 </a>
-                                                                                <a @click="applyProject(p)" data-toggle="tooltip"  data-placement="top"  v-if="!(p.participants.includes(me.s_id))" title="申请项目">
+                                                                                <a @click="applyProject(p)" data-toggle="tooltip"  data-placement="top" v-show="me.role !== 'Counselor'"  v-if="!(p.participants.includes(me.s_id))" title="申请项目">
                                                                                          <span class="glyphicon glyphicon-bookmark"></span>
                                                                                 </a>
                                                                                 <a  data-toggle="tooltip"  data-placement="top" v-show="!status.newsStatus" v-if="p.participants.includes(me.s_id)" title="已申请">
@@ -245,6 +245,16 @@
                                                                                 </div>
                                                                         </div>
                                                                         <div class="from-group col-md-12">
+                                                                                <label class="col-md-4 control-label">届</label>
+                                                                                <div class="col-md-8">
+                                                                                        <div class="checkbox-inline">
+                                                                                                <div class="radio-inline" v-for="item in period" :key="item">
+                                                                                                        <input type="checkbox" name="period" id="inlineRadio1" value="option1"> {{item}} 
+                                                                                                </div>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div class="from-group col-md-12">
                                                                                 <label class="col-md-4 control-label">班级</label>
                                                                                 <div class="col-md-8">
                                                                                         <div class="checkbox-inline">
@@ -338,6 +348,7 @@ export default {
         data: () => ({
                 me: null,
                 loading: false,
+                period:[],
                 project_detail: {
                         project:'',
                         name:'',
@@ -488,6 +499,13 @@ export default {
         created (){
                 this.me = JSON.parse(this.$cookie.get('me'))
                 this.loading = true
+                let today = new Date()
+                let year = today.getUTCFullYear()
+                this.period = [...[year-4, year-3,year-2, year-1]]
+                let month = today.getMonth()
+                if([9,10,11,12].includes(month)){
+                        this.period.push(year)
+                }
                 this.reloadALL()
         },
         mounted(){
