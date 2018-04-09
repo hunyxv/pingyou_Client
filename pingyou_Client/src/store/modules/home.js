@@ -9,11 +9,20 @@ const state = {
                 class_list : [],
                 department_list: [],
                 news :  '',
-                user:[]
+                user:[],
+                wechat_list: []
         },
         status: {
                 project_detail: {
-                        count: '',
+                        count: 0,
+                        page_sum: '',
+                        current_page: '',
+                        has_previous: '',
+                        has_next: '',
+                        item:''
+                },
+                wechat: {
+                        count: 0,
                         page_sum: '',
                         current_page: '',
                         has_previous: '',
@@ -32,6 +41,7 @@ const getters = {
         department_list: state  => state.data.department_list,
         news: state => state.data.news,
         user: state => state.data.user,
+        wechat_list: state => state.data.wechat_list,
         status: state => state.status
 }
 
@@ -55,6 +65,9 @@ const actions = {
                                 break
                         case 'news':
                                 url = '/news'
+                                break
+                        case "wechat":
+                                url = '/wechat?page_size=4'
                                 break
                         default: 
                                 alert('error')
@@ -118,6 +131,17 @@ const actions = {
                                         reject(e)
                                 })
                 })
+        },
+        sendCode({commit}){
+                return new Promise((resolve, reject) => {
+                        get('/sendcode', {})
+                                .then(res => {
+                                        resolve(res)
+                                })
+                                .catch(e => {
+                                        reject(e)
+                                })
+                })
         }
 }
 
@@ -141,6 +165,15 @@ const mutations = {
                         state.data.news = data
                 }else if (item === 'Counselor'){
                         state.status.newStatus = true
+                }else if(item === 'wechat'){
+                        console.log(data.count)
+                        state.data.wechat_list = data.list
+                        state.status.wechat.count = data.count
+                        state.status.wechat.page_sum = data.page_sum
+                        state.status.wechat.current_page = data.current_page
+                        state.status.wechat.has_previous = data.has_previous
+                        state.status.wechat.has_next = data.has_next
+                        state.status.wechat.item = item
                 }
         }
 }

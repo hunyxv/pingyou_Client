@@ -100,6 +100,11 @@ Vue.filter('mapRole', function(state){
         }
 })
 
+Vue.filter('mapTimestamp', function(state){
+        let create_date = new Date(state * 1000)
+        return create_date.toLocaleString()
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

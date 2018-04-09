@@ -78,7 +78,7 @@
                                                                                                         <td>名额：</td><td>{{ click_project_detail.places }}</td><td></td><td>已申请人数：</td><td>{{ click_project_detail.participants.length }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
-                                                                                                        <td>创建时间：</td><td>{{ click_project_detail.create_date }}</td><td></td><td>有效期：</td><td>{{ click_project_detail.expiration }} 天</td>
+                                                                                                        <td>创建时间：</td><td>{{ click_project_detail.create_date | mapTimestamp}}</td><td></td><td>有效期：</td><td>{{ click_project_detail.expiration }} 天</td>
                                                                                                         <td>结果：</td><td><label v-for="(item, index) in click_project_detail.result" :key="index">{{ item }}、</label></td><td></td><td></td><td></td>
                                                                                                 </tr>
                                                                                         </tbody>
@@ -128,22 +128,25 @@
                 <div class="col-md-12">
                         <!-- 教务微信公众号最新动态 -->
                         <div class="col-md-8">
-                                 <div class="panel panel-default dashboard">
-                                         <div class="title">
-                                                        <p>---先空着 动态--</p>
-                                         </div>
-                                         <div class="tables">
-                                                 <p>===========================</p>
-                                                 {{project_detail.department_list}}
-                                                 <p>++++++++++++++++++++</p>
-                                                 {{project_detail.class_list}}
-                                                 <p>000000000000000000</p>
-                                                 {{news}}
-                                                 <p>////////////////////////////</p>
-                                                 {{project_detail}}
-                                                 {{me}}
-                                         </div>
-                                 </div>
+                                <div class="panel panel-default dashboard">
+                                        <div class="media hoverfa" v-for="(item, index) in wechat_list" :key="index" :onclick="item.content_url" target="_blank">
+                                                <div class="media-left media-middle">
+                                                        <a href="">
+                                                                <img class="media-object" style="width:100px; height:100px;" :src="item.img " alt="...">
+                                                        </a>
+                                                </div>
+                                                <div class="media-body">
+                                                        <h4 class="media-heading">{{ item.title }}</h4>
+                                                        {{ item.intro }}
+                                                </div>
+                                        </div>
+                                        <nav aria-label="...">
+                                                <ul class="pager">
+                                                        <li class="previous" :class="status.wechat.has_previous ? '' : 'disabled'"><a @click="changePage(status.wechat, status.wechat.current_page - 1)" aria-label="Previous"><span aria-hidden="true">&larr;</span>上一页</a></li>
+                                                        <li class="next" :class="status.wechat.has_next ? '' : 'disabled'"><a @click="changePage(status.wechat, status.wechat.current_page + 1)" aria-label="Next">下一页 <span aria-hidden="true">&rarr;</span></a></li>
+                                                </ul>
+                                        </nav>
+                                </div>
                         </div>
                         <div class="col-md-4">
                                   <div class="panel panel-default dashboard">
@@ -211,7 +214,7 @@
                                                                                         <div class="panel-heading">
                                                                                                 <h4 class="panel-title">
                                                                                                         <a data-toggle="collapse" data-parent="#accordion" 
-                                                                                                        href="#collapseThree">
+                                                                                                        href="#collapseThree" @click="sendEmail()">
                                                                                                                 点击修改密码，修改密码前要先保证你的邮箱已经提交
                                                                                                         </a>
                                                                                                 </h4>
@@ -282,7 +285,7 @@
                                                                                 <div class="col-md-8">
                                                                                         <div class="checkbox-inline">
                                                                                                 <div class="radio-inline" v-for="item in period" :key="item">
-                                                                                                        <input type="checkbox" name="period" id="inlineRadio1" value="option1"> {{item}} 
+                                                                                                        <input type="checkbox" name="period" value="option1"> {{item}} 
                                                                                                 </div>
                                                                                         </div>
                                                                                 </div>
@@ -369,7 +372,6 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import { get } from '../api'
 
 import Spinner from './Spinner.vue'
 import util from '../util'
@@ -414,6 +416,7 @@ export default {
                         department_list: "department_list",
                         news: "news",
                         user: "user",
+                        wechat_list: 'wechat_list',
                         status: "status"
                 })
         },
@@ -423,7 +426,8 @@ export default {
                         addProjectDetail: 'addProjectDetail',
                         delProjectDetail: 'deleteProjectDetail',
                         editNews: 'editNews',
-                        applyPeojectDetail: 'applyPeojectDetail'
+                        applyPeojectDetail: 'applyPeojectDetail',
+                        sendCode:'sendCode'
                 }),
                 ...mapActions('user',{
                         updateInfo: 'updateInfo'
@@ -434,6 +438,7 @@ export default {
                                 .then(res =>{
                                         this.gonggao =this.news
                                 })
+                        this.reload({item: 'wechat', params:{}})
                         if (this.me.role === 'Counselor'){
                                 this.reload({item: 'project', params: {}})
                                 this.reload({item: 'department', params: {}})
@@ -445,7 +450,7 @@ export default {
                         }
                          this.reload({item: 'project_detail', params: {}})
                                 .then(res => {
-                                         this.loading = false
+                                        this.loading = false
                                  })
                 },
                 changePage(status, page){
@@ -540,6 +545,19 @@ export default {
                 },
                 clickProjectDetail(project_detail){
                         this.click_project_detail = project_detail
+                },
+                sendEmail(){
+                        if (!this.me.email){
+                                alert('请填写你的邮箱')
+                        }else{
+                                this.sendCode()
+                                        .then(res => {
+                                                alert(res.data.data.msg)
+                                        } )
+                                        .catch(e => {
+                                                console.log(e)
+                                        })
+                        }
                 }
 
         },
@@ -681,6 +699,10 @@ export default {
 .col-md-8 .col-md-4{
         margin-bottom: -99999px;
         padding-bottom: 99999px;
+}
+.hoverfa:hover{ 
+        border:rgb(119, 129, 129) 1px solid; 
+        background: #ccc5c5;
 }
 </style>
 

@@ -89,10 +89,6 @@ const mutations = {
         [RELOAD] (state, {item, data}){
                 if (item === 'project_detail' ){
                         state.data.project_detail= data.list[0]
-                        if ( state.data.project_detail){
-                                let create_date = new Date(state.data.project_detail.create_date * 1000)
-                                state.data.project_detail.create_date = create_date.toLocaleString()
-                        }
                 } else if(item == 'ballot') {
                         state.data.ballot_list = data
                 }

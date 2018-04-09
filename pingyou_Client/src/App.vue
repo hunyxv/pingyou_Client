@@ -19,11 +19,10 @@
         <router-link to="/audit" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role === 'Counselor'">
                 <a><span class="glyphicon glyphicon-check" aria-hidden="true"></span>审核</a>
         </router-link>
-       <!-- <router-link to="/contact" active-class="menu-item selected" tag="li" class="menu-item">
-          <a>
-            <span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span>联系人</a>
+        <router-link to="/score" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role !== 'Counselor'">
+                <a><span class="glyphicon glyphicon-object-align-left" aria-hidden="true"></span>考核积分</a>
         </router-link>
-        <router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item">
+        <!--<router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item">
           <a>
             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>用户</a>
         </router-link> -->

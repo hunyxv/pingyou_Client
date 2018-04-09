@@ -33,7 +33,7 @@
                                                                          <td>名额：</td><td>{{ project_detail.places }}</td><td></td><td>已申请人数：</td><td>{{ project_detail.participants.length }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                         <td>创建时间：</td><td>{{ project_detail.create_date }}</td><td></td><td>有效期：</td><td>{{ project_detail.expiration }} 天</td>
+                                                                         <td>创建时间：</td><td>{{ project_detail.create_date | mapTimestamp }}</td><td></td><td>有效期：</td><td>{{ project_detail.expiration }} 天</td>
                                                                          <td></td><td></td><td></td><td></td><td></td>
                                                                 </tr>
                                                         </tbody>
@@ -86,6 +86,9 @@
                         </div>
                         <div class="col-md-4">
                                 <div class="panel panel-primary">
+                                        <div class="panel-heading">
+                                                投票栏
+                                        </div>
                                         <div class="panel-body">
                                                 <div class="col-md-12">
                                                         <div class="ballot" v-for="item in ballot_list" :key="item.id" style="position:relative;" @click="Ballot(item.id)">
