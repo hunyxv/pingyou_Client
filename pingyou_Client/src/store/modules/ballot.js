@@ -50,15 +50,27 @@ const actions = {
                 //                         reject(e)
                 //                 })
                 // })
-                return new Promise((resolve, reject) => {
-                        post('/start_ballot/' + data.pdid, data)
-                                .then(res => {
-                                        resolve(res)
-                                })
-                                .catch(e => {
-                                        reject(e)
-                                })
-                })
+                if (data.status === 1){
+                        return new Promise((resolve, reject) => {
+                                post('/start_ballot/' + data.pdid, data)
+                                        .then(res => {
+                                                resolve(res)
+                                        })
+                                        .catch(e => {
+                                                reject(e)
+                                        })
+                        })
+                }else if(data.status === 2){
+                        return new Promise((resolve, reject) => {
+                                post('/end_ballot/' + data.pdid, data)
+                                        .then(res => {
+                                                resolve(res)
+                                        })
+                                        .catch(e => {
+                                                reject(e)
+                                        })
+                        })
+                }
         },
         updateBallot({commit}, id){
                 return new Promise((resolve, reject) => {

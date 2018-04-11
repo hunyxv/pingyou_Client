@@ -59,8 +59,9 @@
                                         <div class="panel-body messageBox">
                                                 <div class="ballot" v-for="item in ballot_list" :key="item.id" style="position:relative;" data-toggle="modal" data-target="#ballot-detail" @click="ballotDetail(item)">
                                                         {{item.people.name}}
-                                                        <br>
+                                                        
                                                         票数: {{item.number}}
+                                                        总积分: {{ item.integration }}
                                                 </div>
                                                 <!-- 模态框 -->
                                                 <div class="modal fade" id="ballot-detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -78,6 +79,9 @@
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                         <td>项目：</td><td>{{ballot.project_detail.name}}</td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                        <td>总积分(综合评估积分70% + 投票数30%):</td><td>{{ ballot.integration }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                         <td>得票数：</td><td>{{ballot.number}}</td>
@@ -164,7 +168,9 @@ export default {
                 reloadALL(){
                         this.reload({item: 'project_detail', params:{status: 2}})
                                 .then(res => {
-                                        this.getProjectDetailMessageAndBallot(this.project_detail_list[0])
+                                        if (this.project_detail_list[0]){
+                                                this.getProjectDetailMessageAndBallot(this.project_detail_list[0])
+                                        }
                                         this.loading = false
                                 })
                 },
@@ -179,8 +185,13 @@ export default {
                 },
                 passProjectDetail(project_detail){
                         this.changeProStatus({pdid: project_detail.id, data: {status:3}})
+                        // 点击结束后下载文件
                                 .then(res => {
                                         this.loading = true
+                                        let fileName = res.data.data.msg
+                                        let url = `${config.url.baseUrl}/download?filename=${fileName}`
+                                        console.log(url)
+                                        window.open(url)
                                         this.reloadALL()
                                 })
                                 .catch(e => {
@@ -201,6 +212,9 @@ export default {
 
         created (){
                 this.me = JSON.parse(this.$cookie.get('me'))
+                if (this.me.role !== 'Counselor'){
+                        this.$router.push('/home')
+                }
                 this.loading = true
                 this.reloadALL()
         },

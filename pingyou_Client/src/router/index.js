@@ -7,6 +7,7 @@ import User from '@/components/User'
 import Ballot from '@/components/Ballot'
 import Audit from '@/components/Audit'
 import Score from '@/components/Score'
+import Admin from '@/components/Admin'
 
 Vue.use(Router)
 
@@ -47,6 +48,11 @@ export default new Router({
                         path: '/score',
                         name: 'Score',
                         component: Score
+                },
+                {
+                        path: '/admin',
+                        name: 'Admin',
+                        component: Admin
                 }
         ]
 })

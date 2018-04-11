@@ -1,32 +1,32 @@
 <template>
-  <div class="container">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-      <div class="login-div">
-        <div class="panel-heading">
-          <h3 class="panel-title">
-            <strong>评优评先管理系统</strong>
-          </h3>
+        <div class="container">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                        <div class="login-div">
+                                <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                                <strong>评优评先管理系统</strong>
+                                        </h3>
+                                </div>
+                                <div class="panel-body">
+                                        <form role="form" @submit.prevent="login">
+                                                <div class="form-group">
+                                                        <label for="username_sid" style="float: left; margin-left: 2px">用户名或学号</label>
+                                                        <input type="text" class="form-control" placeholder="请输入用户名或邮箱" v-model="username_sid">
+                                                </div>
+                                                <div class="form-group">
+                                                        <label for="password" style="float: left; margin-left: 2px">密码</label>
+                                                        <input type="password" class="form-control" placeholder="请输入密码" v-model="password">
+                                                </div>
+                                                <div class="form-group">
+                                                        <button type="submit" class="btn login-btn btn-block">登录</button>
+                                                </div>
+                                        </form>
+                                </div>
+                        </div>
+                </div>
+                <div class="col-md-4"></div>
         </div>
-        <div class="panel-body">
-          <form role="form" @submit.prevent="login">
-            <div class="form-group">
-              <label for="username_sid" style="float: left; margin-left: 2px">用户名或学号</label>
-              <input type="text" class="form-control" placeholder="请输入用户名或邮箱" v-model="username_sid">
-            </div>
-            <div class="form-group">
-              <label for="password" style="float: left; margin-left: 2px">密码</label>
-              <input type="password" class="form-control" placeholder="请输入密码" v-model="password">
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn login-btn btn-block">登录</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4"></div>
-  </div>
 </template>
 
 <script>
@@ -61,7 +61,11 @@ export default {
                                         .then(response => {
                                                 this.$cookie.set('me', JSON.stringify(response.data.data), {expires: '14D'})
                                                 this.$cookie.set('needRefresh', true, {expires: '14D'})
-                                                this.$router.push('/home')
+                                                if(response.data.data.role === 'Administrator'){
+                                                        this.$router.push('/admin')
+                                                }else{
+                                                        this.$router.push('/home')
+                                                }
                                         })
                                         .catch(e => {
                                                 console.log(e)

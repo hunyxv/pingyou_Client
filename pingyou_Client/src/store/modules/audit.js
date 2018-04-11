@@ -66,6 +66,9 @@ const actions = {
                 //                 })
                 // })
                 return new Promise((resolve, reject) => {
+                        if (data.data.status === 4){
+                                
+                        }
                         put('/project-detail/' + data.pdid, data.data)
                                 .then(res => {
                                         resolve(res)

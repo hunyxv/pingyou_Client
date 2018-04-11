@@ -492,6 +492,7 @@ export default {
                          this.loading = true
                          this.applyPeojectDetail(pro)
                                 .then(res => {
+                                        alert(res.data.data.msg)
                                          this.reload({item: 'project_detail', params: {}})
                                                 .then(
                                                         this.loading = false

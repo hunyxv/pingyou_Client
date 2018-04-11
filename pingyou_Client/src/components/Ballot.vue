@@ -178,7 +178,7 @@ export default {
                         // 结束后 改变项目状态为 2 待审核
                         this.changeProStatus({pdid: id, status: 2})
                                 .then(res => {
-                                        this.$refs.startballot.setAttribute('disabled', true)
+                                        this.$refs.stopballot.setAttribute('disabled', true)
                                         this.reload({item: 'project_detail', params:{status:2}})
                                                 .then(res => {
                                                         this.loading = false

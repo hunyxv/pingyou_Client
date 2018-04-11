@@ -5,6 +5,7 @@ import home from './modules/home'
 import user from './modules/user'
 import ballot from './modules/ballot'
 import audit from './modules/audit'
+import admin from './modules/admin'
 
 
 Vue.use(Vuex)
@@ -17,6 +18,7 @@ export default new Vuex.Store({
                 home,
                 user,
                 ballot,
-                audit
+                audit,
+                admin
         }
 })

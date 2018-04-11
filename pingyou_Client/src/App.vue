@@ -7,19 +7,19 @@
           <a>
             <span class="glyphicon glyphicon-star" aria-hidden="true"></span>公司推荐</a>
         </router-link> -->
-         <router-link to="/home" active-class="menu-item selected" tag="li" class="menu-item">
+         <router-link to="/home" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role !== 'Administrator'">
                 <a><span class="glyphicon glyphicon-home" aria-hidden="true"></span>首页</a>
         </router-link>
-       <router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item">
+       <router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role !== 'Administrator'">
                  <a><span class="glyphicon glyphicon-user" aria-hidden="true"></span>用户</a>
         </router-link>
-        <router-link to="/ballot" active-class="menu-item selected" tag="li" class="menu-item">
+        <router-link to="/ballot" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role !== 'Administrator'">
                  <a><span class="glyphicon glyphicon-flag" aria-hidden="true"></span>投票</a>
         </router-link>
         <router-link to="/audit" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role === 'Counselor'">
                 <a><span class="glyphicon glyphicon-check" aria-hidden="true"></span>审核</a>
         </router-link>
-        <router-link to="/score" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role !== 'Counselor'">
+        <router-link to="/score" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role !== 'Counselor'" v-show="me.role !== 'Administrator'">
                 <a><span class="glyphicon glyphicon-object-align-left" aria-hidden="true"></span>考核积分</a>
         </router-link>
         <!--<router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item">

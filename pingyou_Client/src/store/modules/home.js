@@ -166,7 +166,6 @@ const mutations = {
                 }else if (item === 'Counselor'){
                         state.status.newStatus = true
                 }else if(item === 'wechat'){
-                        console.log(data.count)
                         state.data.wechat_list = data.list
                         state.status.wechat.count = data.count
                         state.status.wechat.page_sum = data.page_sum
