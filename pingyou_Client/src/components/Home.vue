@@ -79,7 +79,7 @@
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                         <td>创建时间：</td><td>{{ click_project_detail.create_date | mapTimestamp}}</td><td></td><td>有效期：</td><td>{{ click_project_detail.expiration }} 天</td>
-                                                                                                        <td>结果：</td><td><label v-for="(item, index) in click_project_detail.result" :key="index">{{ item }}、</label></td><td></td><td></td><td></td>
+                                                                                                        <td>届：</td><td>{{click_project_detail.period}}</td><td></td><td>结果：</td><td><label v-for="(item, index) in click_project_detail.result" :key="index">{{ item }}、</label></td>
                                                                                                 </tr>
                                                                                         </tbody>
                                                                                 </table>
@@ -156,11 +156,11 @@
                                                 </div>
                                                 <b v-show="status.newsStatus">新增项目</b>
                                                 <b v-show="!status.newsStatus">我的信息</b>
-                                                <a  style="float: right" data-placement="top" data-toggle="modal" data-target="#myModal" v-show="!status.newsStatus" title="修改">
+                                                <a  style="float: right" data-placement="top" data-toggle="modal" data-target="#myInfoModal" v-show="!status.newsStatus" title="修改">
                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                 </a>
                                                 <!-- 修改信息 -->
-                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal fade" id="myInfoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                                 <div class="modal-content">
                                                                         <div class="modal-header">
@@ -285,7 +285,7 @@
                                                                                 <div class="col-md-8">
                                                                                         <div class="checkbox-inline">
                                                                                                 <div class="radio-inline" v-for="item in period" :key="item">
-                                                                                                        <input type="checkbox" name="period" value="option1"> {{item}} 
+                                                                                                        <input type="checkbox" name="period"  @click="checkbox_('period', item)"> {{item}} 
                                                                                                 </div>
                                                                                         </div>
                                                                                 </div>
@@ -387,6 +387,7 @@ export default {
                 project_detail: {
                         project:'',
                         name:'',
+                        period_list:[],
                         department_list: [],
                         class_list: [],
                         places:'',
@@ -463,7 +464,7 @@ export default {
                                         })
                         }
                  },
-                 addNewProjectDetail(button) {
+                addNewProjectDetail(button) {
                          this.$refs.addprojectdetail.setAttribute('disabled', true)
                          this.addProjectDetail(this.project_detail)
                                 .then(res => {
@@ -541,6 +542,13 @@ export default {
                                          this.project_detail.class_list.pop(id)
                                 }else{
                                         this.project_detail.class_list.push(id)
+                                }
+                        }
+                        if (item === 'period'){
+                                if (this.project_detail.period_list.includes(id)){
+                                        this.project_detail.period_list.pop(id)
+                                }else{
+                                        this.project_detail.period_list.push(id)
                                 }
                         }
                 },

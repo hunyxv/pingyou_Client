@@ -32,7 +32,7 @@ let headerUrl = [
         'http://bpic.588ku.com/element_origin_min_pic/01/55/09/6257474dbc567d0.jpg',
         'http://bpic.588ku.com/element_origin_min_pic/01/88/79/5157555d24aff47.jpg',
         'http://bpic.588ku.com/element_origin_min_pic/01/37/59/65573c55d41f5fd.jpg ',
-        'http://www.sucaijishi.com/uploadfile/2014/0524/20140524012042475.jpg',//9
+        'http://www.sucaijishi.com/uploadfile/2014/0524/20140524012042475.jpg',
         'http://www.sucaijishi.com/uploadfile/2014/0524/20140524012043687.gif',
         'http://www.sucaijishi.com/uploadfile/2014/0524/20140524012044632.jpg',
         'http://www.sucaijishi.com/uploadfile/2014/0524/20140524012047254.png',

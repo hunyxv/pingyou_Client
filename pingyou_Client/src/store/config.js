@@ -13,6 +13,7 @@ export const config = {
                 department: '/departmet',
                 project_detail: '/project-detail',
                 class: '/class',
-                project: '/project'
+                project: '/project',
+                statistics:'/statistics'
         },
 }

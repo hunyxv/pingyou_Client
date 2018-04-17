@@ -18,6 +18,15 @@
                                                         <label for="password" style="float: left; margin-left: 2px">密码</label>
                                                         <input type="password" class="form-control" placeholder="请输入密码" v-model="password">
                                                 </div>
+
+                                                <div class="form-group">
+                                                        <div class="code" id="checkCode" @click="createCode()" >{{code}}</div>
+                                                        <a href="#" @click="createCode()">看不清换一张</a>
+                                                        <!-- <label for="code" style="margin-left: 2px">验证码</label>  -->
+                                                        
+                                                        <input type="text" class="form-control" placeholder="请输入验证码" v-model="inputCode">      
+                                                       
+                                                </div>
                                                 <div class="form-group">
                                                         <button type="submit" class="btn login-btn btn-block">登录</button>
                                                 </div>
@@ -37,13 +46,25 @@ export default {
         data: () => ({
                 url: config.url.baseUrl + config.url.login,
                 username_sid:'',
-                password:''
+                password:'',
+                code:'',
+                inputCode:''
         }),
         created() {
-
+                this.createCode()
         },
         methods:{
                 login: function (){
+                        if (this.inputCode.length === 0){
+                                alert('请输入验证码！')
+                                return
+                        }else if(this.inputCode !== this.code){
+                                alert('验证码输入有误！')
+                                this.createCode()
+                                this.inputCode=''
+                                return
+                        }
+
                         axios.post(this.url, {
                                 username_sid: this.username_sid,
                                 password: this.password
@@ -74,6 +95,23 @@ export default {
                         .catch(e => {
                                 alert('请填写正确的用户名和密码')
                         })
+                },
+                createCode(){
+                        this.code = "";
+                        var codeLength = 6; //验证码的长度
+                        var checkCode = document.getElementById("checkCode");
+                        var codeChars = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
+                                'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+                         for(var i = 0; i < codeLength; i++)  {
+                                var charNum = Math.floor(Math.random() * 52);
+                                this.code += codeChars[charNum];
+                        }
+                        
+                        if(checkCode) {
+                                checkCode.className = "code";
+                                //checkCode.innerHTML = this.code;
+                        }
                 }
         }
 }
@@ -100,4 +138,30 @@ export default {
   background: #3f89ec;
   letter-spacing: 5px;
 }
+ .code {
+        background:url('../../static/code_bg.jpeg');
+        font-family:Arial;
+        font-style:italic;
+        color:blue;
+        font-size:20px;
+        border:0;
+        padding:2px 3px;
+        letter-spacing:3px;
+        font-weight:bolder;
+        float:left;
+        cursor:pointer;
+        width:150px;
+        height:40px;
+        line-height:40px;
+        text-align:center;
+        vertical-align:middle;
+}
+a {
+        text-decoration:none;
+        font-size:12px;
+        color:#288bc4;
+}
+a:hover {
+        text-decoration:underline;
+} 
 </style>

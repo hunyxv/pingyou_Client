@@ -22,11 +22,11 @@
         <router-link to="/score" active-class="menu-item selected" tag="li" class="menu-item" v-if="me.role !== 'Counselor'" v-show="me.role !== 'Administrator'">
                 <a><span class="glyphicon glyphicon-object-align-left" aria-hidden="true"></span>考核积分</a>
         </router-link>
-        <!--<router-link to="/user" active-class="menu-item selected" tag="li" class="menu-item">
+        <router-link to="/statistics" active-class="menu-item selected" tag="li" class="menu-item">
           <a>
-            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>用户</a>
-        </router-link> -->
-        <!-- <router-link v-if="me && me.level === 2 && me.is_sales_manager" to="/statistic" active-class="menu-item selected" tag="li" class="menu-item">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>统计</a>
+        </router-link> 
+       <!-- <router-link v-if="me && me.level === 2 && me.is_sales_manager" to="/statistic" active-class="menu-item selected" tag="li" class="menu-item">
           <a>
             <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>统计</a>
         </router-link> -->

@@ -6,6 +6,7 @@ import user from './modules/user'
 import ballot from './modules/ballot'
 import audit from './modules/audit'
 import admin from './modules/admin'
+import statistics from './modules/statistics'
 
 
 Vue.use(Vuex)
@@ -19,6 +20,7 @@ export default new Vuex.Store({
                 user,
                 ballot,
                 audit,
-                admin
+                admin,
+                statistics
         }
 })

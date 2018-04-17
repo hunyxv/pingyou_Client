@@ -8,6 +8,7 @@ import Ballot from '@/components/Ballot'
 import Audit from '@/components/Audit'
 import Score from '@/components/Score'
 import Admin from '@/components/Admin'
+import Statistics from '@/components/Statistics'
 
 Vue.use(Router)
 
@@ -53,6 +54,11 @@ export default new Router({
                         path: '/admin',
                         name: 'Admin',
                         component: Admin
+                },
+                {
+                        path: '/statistics',
+                        name: 'Statistics',
+                        component: Statistics
                 }
         ]
 })
