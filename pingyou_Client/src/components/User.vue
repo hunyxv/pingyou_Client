@@ -44,8 +44,8 @@
                                                         </div>
                                                         <div class="col-md-2">
                                                                 <div class="input-group">
-                                                                        <span class="input-group-addon" id="basic-addon1">学号起始</span>
-                                                                        <input type="text" class="form-control" placeholder="例:2014010301" aria-describedby="basic-addon1" v-model="classinfo.start_sid">
+                                                                        <span class="input-group-addon" id="basic-addon1">届</span>
+                                                                        <input type="text" class="form-control" placeholder="例:2014" aria-describedby="basic-addon1" v-model="classinfo.start_sid">
                                                                 </div>
                                                         </div>
                                                         <div class="col-md-2">
@@ -222,7 +222,7 @@
                                                         <div class="panel-heading">
                                                                 <h4 class="panel-title">
                                                                         <a data-toggle="collapse" data-parent="#accordion" 
-                                                                        href="#collapseThree">
+                                                                        href="#collapseThree" @click="sendEmail()">
                                                                                 点击修改密码，修改密码前要先保证你的邮箱已经提交
                                                                         </a>
                                                                 </h4>
@@ -335,15 +335,17 @@ export default {
                         all_user_list: 'user_list',
                         class_list: 'class_list',
                         department_list: 'department_list',
-                        status:  'status'
-                }),
+                        status:  'status',
+                })
+               
         },
         methods: {
                 ...mapActions('user',{
                         reload: 'reload',
                         update: 'updateInfo',
                         createUser: 'createUser',   
-                        deleteUser: 'deleteUser'
+                        deleteUser: 'deleteUser',
+                         sendCode:'sendCode'
                 }),
                 reloadALL() {
                         if (this.me.role === 'Counselor'){
@@ -436,7 +438,7 @@ export default {
                         this.loading = true
                         this.createUser(data)
                                 .then(res => {
-                                        this.getThisDepartmentUser(department)
+                                        this.getThisDepartmentUser(data.department)
                                         this.loading = false
                                         //  this.reload({item: 'all', params: {}})
                                         //         .then(res => {
@@ -446,6 +448,19 @@ export default {
                                 .catch(e => {
                                         console.log(e)
                                 })
+                },
+                sendEmail(){
+                        if (!this.me.email){
+                                alert('请填写你的邮箱')
+                        }else{
+                                this.sendCode()
+                                        .then(res => {
+                                                alert(res.data.data.msg)
+                                        } )
+                                        .catch(e => {
+                                                console.log(e)
+                                        })
+                        }
                 }
         },
 

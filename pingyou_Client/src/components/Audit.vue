@@ -81,7 +81,7 @@
                                                                                                         <td>项目：</td><td>{{ballot.project_detail.name}}</td>
                                                                                                 </tr>
                                                                                                 <tr>
-                                                                                                        <td>总积分(综合评估积分70% + 投票数30%):</td><td>{{ ballot.integration }}</td>
+                                                                                                        <td>总积分(综合评估积分50% + 投票数50%):</td><td>{{ ballot.integration }}</td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                         <td>得票数：</td><td>{{ballot.number}}</td>

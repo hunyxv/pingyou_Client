@@ -168,7 +168,7 @@ export default {
                 },
                 exportExcel(){
                         if (this.status.item === 'all'){
-
+                                
                         }
                         let params = ''
                         for (var i in this.filterParams){
@@ -182,6 +182,7 @@ export default {
                         //this.filterParams = {}
                 },
                 reset(){
+                        this.filterParams = {}
                         this.reload({ item: 'project-detail', params: {item: this.item}})
                 }
         },

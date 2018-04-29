@@ -26,7 +26,7 @@
                                                         <label for="inputfile">上传excel文件</label>
                                                         <input type="file" id="inputfile" @change="getFile($event)">
                                                         <p class="help-block">只接受 'et', 'xls', 'xlsx' 文件</p>
-                                                         <button class="btn btn-info">&nbsp;&nbsp;上&nbsp;传&nbsp;&nbsp;</button>
+                                                         <button class="btn btn-info" ref="uploadfile">&nbsp;&nbsp;上&nbsp;传&nbsp;&nbsp;</button>
                                                 </div>
                                         </form>
                                 </div>
@@ -80,6 +80,10 @@ export default {
         }),
 
         methods:{
+                reloadALL(){
+                        this.loading=true
+                         this.getScoreList()
+                },
                 getFile(event){
                         this.upath = event.target.files[0];
                 },
@@ -112,6 +116,9 @@ export default {
                                 .then(res => {
                                         this.scoreList = res.data.data
                                         this.loading = false
+                                        if(this.me.role === 'Student'){
+                                                this.$refs.uploadfile.setAttribute('disabled', true)
+                                        }
                                 })
                                 .catch(e => {
                                         console.log(e)
@@ -120,7 +127,7 @@ export default {
         },
         created (){
                 this.me = JSON.parse(this.$cookie.get('me'))
-                this.getScoreList()
+               this.reloadALL()
 
                 // let today = new Date()
                 // let year = today.getUTCFullYear()

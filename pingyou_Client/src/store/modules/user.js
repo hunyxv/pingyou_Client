@@ -97,6 +97,17 @@ const actions = {
                                         reject(e)
                                 })
                 })
+        },
+        sendCode({commit}){
+                return new Promise((resolve, reject) => {
+                        get('/sendcode', {})
+                                .then(res => {
+                                        resolve(res)
+                                })
+                                .catch(e => {
+                                        reject(e)
+                                })
+                })
         }
 }
 
